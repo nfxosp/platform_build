@@ -63,6 +63,7 @@ function check_product()
     else
        NFX_BUILD=
     fi
+    export NFX_BUILD
 
     CALLED_FROM_SETUP=true BUILD_SYSTEM=build/core \
         TARGET_PRODUCT=$1 \
