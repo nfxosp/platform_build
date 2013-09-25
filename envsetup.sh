@@ -133,6 +133,7 @@ function check_product()
 
     if (echo -n $1 | grep -q -e "^nfx_") ; then
        NFX_BUILD=$(echo -n $1 | sed -e 's/^nfx_//g')
+       export BUILD_NUMBER=$((date +%s%N ; echo $NFX_BUILD; hostname) | openssl sha1 | sed -e 's/.*=//g; s/ //g' | cut -c1-10)
     else
        NFX_BUILD=
     fi
