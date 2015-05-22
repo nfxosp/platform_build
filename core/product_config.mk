@@ -181,7 +181,7 @@ include $(BUILD_SYSTEM)/device.mk
 
 # A NFX build needs only the NFX product makefiles.
 ifneq ($(NFX_BUILD),)
-  all_product_configs := $(shell ls device/*/$(NFX_BUILD)/nfx.mk)
+  all_product_configs := $(shell find device -path "*/$(NFX_BUILD)/nfx.mk")
 else
   ifneq ($(strip $(TARGET_BUILD_APPS)),)
   # An unbundled app build needs only the core product makefiles.
