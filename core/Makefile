@@ -53,7 +53,7 @@ gen := $(OUT_DOCS)/index.html
 ALL_DOCS += $(gen)
 $(gen): frameworks/base/docs/docs-redirect-index.html
 	@mkdir -p $(dir $@)
-	@cp -f $< $@
+	@rsync -a $< $@
 endif
 
 # -----------------------------------------------------------------
@@ -849,23 +849,23 @@ $(INSTALLED_RECOVERYIMAGE_TARGET): $(MKBOOTFS) $(MKBOOTIMG) $(MINIGZIP) \
 	$(hide) mkdir -p $(TARGET_RECOVERY_OUT)
 	$(hide) mkdir -p $(TARGET_RECOVERY_ROOT_OUT)/etc $(TARGET_RECOVERY_ROOT_OUT)/tmp
 	@echo Copying baseline ramdisk...
-	$(hide) cp -R $(TARGET_ROOT_OUT) $(TARGET_RECOVERY_OUT)
+	$(hide) rsync -a $(TARGET_ROOT_OUT) $(TARGET_RECOVERY_OUT)
 	@echo Modifying ramdisk contents...
 	$(hide) rm -f $(TARGET_RECOVERY_ROOT_OUT)/init*.rc
-	$(hide) cp -f $(recovery_initrc) $(TARGET_RECOVERY_ROOT_OUT)/
+	$(hide) rsync -a $(recovery_initrc) $(TARGET_RECOVERY_ROOT_OUT)/
 	$(hide) rm -f $(TARGET_RECOVERY_ROOT_OUT)/sepolicy
-	$(hide) cp -f $(recovery_sepolicy) $(TARGET_RECOVERY_ROOT_OUT)/sepolicy
-	$(hide) -cp $(TARGET_ROOT_OUT)/init.recovery.*.rc $(TARGET_RECOVERY_ROOT_OUT)/
-	$(hide) cp -f $(recovery_binary) $(TARGET_RECOVERY_ROOT_OUT)/sbin/
+	$(hide) rsync -a $(recovery_sepolicy) $(TARGET_RECOVERY_ROOT_OUT)/sepolicy
+	$(hide) rsync -a $(TARGET_ROOT_OUT)/init.recovery.*.rc $(TARGET_RECOVERY_ROOT_OUT)/ | true # Ignore error when the src file doesn't exist.
+	$(hide) rsync -a $(recovery_binary) $(TARGET_RECOVERY_ROOT_OUT)/sbin/
 	$(hide) mkdir -p $(TARGET_RECOVERY_ROOT_OUT)/res
 	$(hide) rm -rf $(TARGET_RECOVERY_ROOT_OUT)/res/*
-	$(hide) cp -rf $(recovery_resources_common)/* $(TARGET_RECOVERY_ROOT_OUT)/res
-	$(hide) cp -f $(recovery_font) $(TARGET_RECOVERY_ROOT_OUT)/res/images/font.png
+	$(hide) rsync -a $(recovery_resources_common)/* $(TARGET_RECOVERY_ROOT_OUT)/res
+	$(hide) rsync -a $(recovery_font) $(TARGET_RECOVERY_ROOT_OUT)/res/images/font.png
 	$(hide) $(foreach item,$(recovery_resources_private), \
-	  cp -rf $(item) $(TARGET_RECOVERY_ROOT_OUT)/)
+	  rsync -a $(item) $(TARGET_RECOVERY_ROOT_OUT)/)
 	$(hide) $(foreach item,$(recovery_fstab), \
-	  cp -f $(item) $(TARGET_RECOVERY_ROOT_OUT)/etc/recovery.fstab)
-	$(hide) cp $(RECOVERY_INSTALL_OTA_KEYS) $(TARGET_RECOVERY_ROOT_OUT)/res/keys
+	  rsync -a $(item) $(TARGET_RECOVERY_ROOT_OUT)/etc/recovery.fstab)
+	$(hide) rsync -a $(RECOVERY_INSTALL_OTA_KEYS) $(TARGET_RECOVERY_ROOT_OUT)/res/keys
 	$(hide) cat $(INSTALLED_DEFAULT_PROP_TARGET) $(recovery_build_prop) \
 	        > $(TARGET_RECOVERY_ROOT_OUT)/default.prop
 	$(hide) $(MKBOOTFS) $(TARGET_RECOVERY_ROOT_OUT) | $(MINIGZIP) > $(recovery_ramdisk)
@@ -968,7 +968,7 @@ define build-systemimage-target
       || ( echo "Out of space? the tree size of $(TARGET_OUT) is (MB): " 1>&2 ;\
            du -sm $(TARGET_OUT) 1>&2;\
            echo "The max is $$(( $(BOARD_SYSTEMIMAGE_PARTITION_SIZE) / 1048576 )) MB." 1>&2 ;\
-           mkdir -p $(DIST_DIR); cp $(INSTALLED_FILES_FILE) $(DIST_DIR)/installed-files-rescued.txt; \
+           mkdir -p $(DIST_DIR); rsync -a $(INSTALLED_FILES_FILE) $(DIST_DIR)/installed-files-rescued.txt; \
            exit 1 )
 endef
 
@@ -1087,7 +1087,7 @@ endif
 define build-boottarball-target
     $(hide) echo "Target boot fs tarball: $(INSTALLED_BOOTTARBALL_TARGET)"
     $(hide) mkdir -p $(PRODUCT_OUT)/boot
-    $(hide) cp -f $(INTERNAL_BOOTIMAGE_FILES) $(PRODUCT_OUT)/boot/.
+    $(hide) rsync -a $(INTERNAL_BOOTIMAGE_FILES) $(PRODUCT_OUT)/boot/.
     $(hide) echo $(BOARD_KERNEL_CMDLINE) > $(PRODUCT_OUT)/boot/cmdline
     $(hide) $(MKTARBALL) $(FS_GET_STATS) \
                  $(PRODUCT_OUT) boot $(PRIVATE_BOOT_TAR) \
@@ -1738,9 +1738,9 @@ $(INTERNAL_SDK_TARGET): $(deps)
 			-v "DLL_EXTENSION=$(HOST_SHLIB_SUFFIX)" \
 			-v "FONT_OUT=$(SDK_FONT_TEMP)" \
 			-o $(PRIVATE_DIR) && \
-		cp -f $(target_notice_file_txt) \
+		rsync -a $(target_notice_file_txt) \
 				$(PRIVATE_DIR)/system-images/android-$(PLATFORM_VERSION)/$(TARGET_CPU_ABI)/NOTICE.txt && \
-		cp -f $(tools_notice_file_txt) $(PRIVATE_DIR)/platform-tools/NOTICE.txt && \
+		rsync -a $(tools_notice_file_txt) $(PRIVATE_DIR)/platform-tools/NOTICE.txt && \
 		HOST_OUT_EXECUTABLES=$(HOST_OUT_EXECUTABLES) HOST_OS=$(HOST_OS) \
 			development/build/tools/sdk_clean.sh $(PRIVATE_DIR) && \
 		chmod -R ug+rwX $(PRIVATE_DIR) && \
