@@ -512,10 +512,10 @@ function mka() {
 function breakfast()
 {
     target=$1
-    CM_DEVICES_ONLY="true"
+    NFX_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
     add_lunch_combo full-eng
-    for f in `/bin/ls vendor/fml/vendorsetup.sh 2> /dev/null`
+    for f in `/bin/ls vendor/nfx/vendorsetup.sh 2> /dev/null`
         do
 echo "including $f"
             . $f
