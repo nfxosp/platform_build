@@ -16,6 +16,7 @@ Invoke ". build/envsetup.sh" from your shell to add the following functions to y
 - resgrep: Greps on all local res/*.xml files.
 - sgrep:   Greps on all local source files.
 - godir:   Go to the directory containing a file.
+- mka:      Builds using SCHED_BATCH on all processors
 
 Look at the source to view more functions. The complete list is:
 EOF
@@ -1702,6 +1703,23 @@ function godir () {
         pathname=${lines[0]}
     fi
     \cd $T/$pathname
+}
+
+function mka() {
+    local T=$(gettop)
+    if [ "$T" ]; then
+        case `uname -s` in
+            Darwin)
+                make -C $T -j `sysctl hw.ncpu|cut -d" " -f2` "$@"
+                ;;
+            *)
+                mk_timer schedtool -B -n 1 -e ionice -n 1 make -C $T -j$(cat /proc/cpuinfo | grep "^processor" | wc -l) "$@"
+                ;;
+        esac
+
+    else
+        echo "Couldn't locate the top of the tree.  Try setting TOP."
+    fi
 }
 
 # Force JAVA_HOME to point to java 1.7 or java 1.6  if it isn't already set.
