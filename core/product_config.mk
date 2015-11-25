@@ -184,10 +184,16 @@ ifneq ($(strip $(TARGET_BUILD_APPS)),)
 all_product_configs := $(call get-product-makefiles,\
     $(SRC_TARGET_DIR)/product/AndroidProducts.mk)
 else
-# Read in all of the product definitions specified by the AndroidProducts.mk
-# files in the tree.
-all_product_configs := $(get-all-product-makefiles)
-endif
+  ifneq ($(NFX_BUILD),)
+    $(call import-products, device/nfx/$(NFX_BUILD)/device.mk)
+  else
+  # Read in all of the product definitions specified by the AndroidProducts.mk
+    # files in the tree.
+    #
+    #TODO: when we start allowing direct pointers to product files,
+    #    guarantee that they're in this list.
+    $(call import-products, $(get-all-product-makefiles))
+  endif
 
 # Find the product config makefile for the current product.
 # all_product_configs consists items like:
