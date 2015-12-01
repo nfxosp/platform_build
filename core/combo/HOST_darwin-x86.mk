@@ -37,7 +37,7 @@ $(combo_2nd_arch_prefix)HOST_TOOLCHAIN_PREFIX := $($(combo_2nd_arch_prefix)HOST_
 ifneq (,$(strip $(wildcard $($(combo_2nd_arch_prefix)HOST_TOOLCHAIN_PREFIX)-gcc)))
 $(combo_2nd_arch_prefix)HOST_CC  := $($(combo_2nd_arch_prefix)HOST_TOOLCHAIN_PREFIX)-gcc
 $(combo_2nd_arch_prefix)HOST_CXX := $($(combo_2nd_arch_prefix)HOST_TOOLCHAIN_PREFIX)-g++
-ifneq ($(filter 10.8 10.9, $(mac_sdk_version)),)
+ifneq ($(filter 10.8 10.9 10.10 10.11, $(mac_sdk_version)),)
 # Mac SDK 10.8+ no longer has stdarg.h, etc
 host_toolchain_header := $($(combo_2nd_arch_prefix)HOST_TOOLCHAIN_ROOT)/lib/gcc/i686-apple-darwin$(gcc_darwin_version)/4.2.1/include
 $(combo_2nd_arch_prefix)HOST_GLOBAL_CFLAGS += -isystem $(host_toolchain_header)
@@ -66,7 +66,7 @@ $(combo_2nd_arch_prefix)HOST_JNILIB_SUFFIX := .jnilib
 $(combo_2nd_arch_prefix)HOST_GLOBAL_CFLAGS += \
     -include $(call select-android-config-h,darwin-x86)
 
-ifneq ($(filter 10.7 10.7.% 10.8 10.8.%, $(build_mac_version)),)
+ifneq ($(filter 10.7 10.7.% 10.8 10.8.% 10.9 10.9.% 10.10 10.10.% 10.11 10.11.%, $(build_mac_version)),)
        $(combo_2nd_arch_prefix)HOST_RUN_RANLIB_AFTER_COPYING := false
 else
        $(combo_2nd_arch_prefix)HOST_RUN_RANLIB_AFTER_COPYING := true
