@@ -1198,12 +1198,12 @@ def WriteIncrementalOTAPackage(target_zip, source_zip, output_zip):
     target_fp = CalculateFingerprint(oem_props, oem_dict, OPTIONS.target_info_dict)
     source_fp = CalculateFingerprint(oem_props, oem_dict, OPTIONS.source_info_dict)
 
-  if oem_props is None:
-    script.AssertSomeFingerprint(source_fp, target_fp)
-  else:
-    script.AssertSomeThumbprint(
-        GetBuildProp("ro.build.thumbprint", OPTIONS.target_info_dict),
-        GetBuildProp("ro.build.thumbprint", OPTIONS.source_info_dict))
+    if oem_props is None:
+      script.AssertSomeFingerprint(source_fp, target_fp)
+    else:
+      script.AssertSomeThumbprint(
+          GetBuildProp("ro.build.thumbprint", OPTIONS.target_info_dict),
+          GetBuildProp("ro.build.thumbprint", OPTIONS.source_info_dict))
 
   metadata["pre-build"] = source_fp
   metadata["post-build"] = target_fp
